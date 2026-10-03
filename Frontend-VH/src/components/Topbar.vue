@@ -62,7 +62,7 @@ const githubUsername = ref('TB-Table')
 
 /* Logo */
 .brand {
-  font-size: 22px;
+  font-size: 30px;
   font-weight: 800;
   letter-spacing: -0.5px;
   color: #1f2328;
