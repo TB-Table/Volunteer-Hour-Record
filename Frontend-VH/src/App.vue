@@ -1,11 +1,11 @@
 <script setup>
 import Topbar from './components/Topbar.vue'
-import RecordCard from './components/Record-card.vue'
+import Home from './views/Home.vue'
 </script>
 
 <template>
   <Topbar />
-  <RecordCard />
+  <Home />
 </template>
 
 <style scoped>

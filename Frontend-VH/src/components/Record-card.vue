@@ -27,7 +27,8 @@
 <style scoped>
 .card-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
   gap: 24px;
   padding: 20px 0;
   width: 100%;
@@ -35,6 +36,7 @@
 
 /* 核心卡片样式 */
 .record-card {
+  position: relative;
   background: #ffffff;
   border: 1px solid #e5e5e5;
   border-radius: 12px; 
