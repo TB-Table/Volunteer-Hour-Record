@@ -51,6 +51,16 @@ app.get('/api/records', async (req, res) => {
 
     const query = {};
 
+    if (search) {
+      const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+      query.$or = [
+        { activity: { $regex: escaped, $options: 'i' } },
+        { organization: { $regex: escaped, $options: 'i' } },
+        { text: { $regex: escaped, $options: 'i' } }
+      ];
+    }
+
     const records = await Record.find(query) //查询所有记录
       .sort({ id: -1 }) //id倒序排列
       .limit(100) //限制返回数量

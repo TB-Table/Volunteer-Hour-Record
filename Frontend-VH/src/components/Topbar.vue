@@ -47,7 +47,7 @@ const githubUsername = ref('TB-Table')
   width: 100%;
   height: 80px;
   background: #ffffff;
-  border-bottom: 2px solid #e5e5e5;
+  border-bottom: 1px solid #e5e5e5;
 }
 
 .navbar-inner {
