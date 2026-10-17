@@ -17,7 +17,7 @@ const githubUsername = ref('TB-Table')
     <div class="nav-right">
       <!-- 右侧导航 -->
       <div class="nav-links">
-        <RouterLink to="/">Dashboard</RouterLink>
+        <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/Record">Record</RouterLink>
         <RouterLink to="/Profile">Profile</RouterLink>
       </div>
@@ -47,7 +47,7 @@ const githubUsername = ref('TB-Table')
   width: 100%;
   height: 80px;
   background: #ffffff;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 2px solid #e5e5e5;
 }
 
 .navbar-inner {
