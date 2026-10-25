@@ -30,7 +30,7 @@ mongoose.connect('mongodb://localhost:27017/volunteer-record')
     type: Number,
     required: true
   },
-  Dates: {
+  date: {
     type: [String],
     default: []
   }
@@ -54,12 +54,12 @@ app.get('/api/records', async (req, res) => {
     if (search) {
       const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-      query.$or = [
-        { activity: { $regex: escaped, $options: 'i' } },
-        { organization: { $regex: escaped, $options: 'i' } },
-        { text: { $regex: escaped, $options: 'i' } }
-      ];
-    }
+        query.$or = [
+          { activity: { $regex: escaped, $options: 'i' } },
+          { organization: { $regex: escaped, $options: 'i' } },
+          { text: { $regex: escaped, $options: 'i' } }
+        ];
+      }
 
     const records = await Record.find(query) //查询所有记录
       .sort({ id: -1 }) //id倒序排列

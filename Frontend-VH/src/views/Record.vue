@@ -1,12 +1,49 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 
 const searchQuery = ref("")
+const sortOrder = ref("newest")
+const records = ref([]) 
+const loading = ref(false) //加载中
+const errorMessage = ref("") //报错
+let currentRequestId = 0 //第几次请求//
 
-const records = ref([])
+//前后端连接
+async function fetchRecord(){
+  const requestId = ++currentRequestId
+  loading.value = true
+  errorMessage.value = ""
 
+  try{
+    const params = new URLSearchParams()
+    params.set('search', searchQuery.value.trim())
+  
+    const response = await fetch(
+      `http://localhost:8989/api/records?${params.toString()}`
+    )
+
+    const data = await response.json()
+    if (requestId === currentRequestId) {
+      records.value = data
+    }
+  } catch (error) {
+    if (requestId === currentRequestId) {
+      errorMessage.value = error.message
+    }
+  } finally {
+    if (requestId === currentRequestId) {
+      loading.value = false
+    }
+  }
+}
+
+onMounted(fetchRecord) //打开网页获取一次数据
+watch(searchQuery, fetchRecord) //搜索变化获取数据
+
+
+/* 前端检索，但现在用后端了
 const filteredRecords = computed(() => {
-  const keyword = searchQuery.value.trim().toLowerCase()
+const keyword = searchQuery.value.trim().toLowerCase()
 
   if (!keyword){
     return records.value
@@ -31,6 +68,7 @@ const filteredRecords = computed(() => {
 
   return result
 })
+  */
 
 </script>
 
@@ -51,22 +89,22 @@ const filteredRecords = computed(() => {
 
       <table>
         <thead>
-          <tr v-for="record in filteredRecords" :key="record.id">
-              <td>{{ record.date }}</td>
-              <td>{{ record.activity }}</td>
-              <td>{{ record.organization }}</td>
-              <td>{{ Number(record.hours ?? 0).toFixed(1) }}</td>
+          <tr>
+              <td>Date</td>
+              <td>Activity</td>
+              <td>Organization</td>
+              <td>Hours</td>
           </tr>
         </thead>
         <tbody>
-        <tr v-for="record in filteredRecords" :key="record.id">
+        <tr v-for="record in records" :key="record.id">
           <td>{{ record.date }}</td>
           <td>{{ record.activity }}</td>
           <td>{{ record.organization }}</td>
          <td>{{ Number(record.hours ?? 0).toFixed(1) }}</td>
         </tr>
         
-        <tr v-if="filteredRecords && filteredRecords.length === 0">
+        <tr v-if="records && records.length === 0">
           <td colspan="4">No matching records found.</td>
         </tr>
       </tbody>
