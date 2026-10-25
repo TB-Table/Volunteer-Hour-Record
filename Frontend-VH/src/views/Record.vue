@@ -41,7 +41,7 @@ onMounted(fetchRecord) //打开网页获取一次数据
 watch(searchQuery, fetchRecord) //搜索变化获取数据
 
 
-/* 前端检索，但现在用后端了
+/* 前端检索，但现在用后端了, 留着养眼
 const filteredRecords = computed(() => {
 const keyword = searchQuery.value.trim().toLowerCase()
 
@@ -69,6 +69,24 @@ const keyword = searchQuery.value.trim().toLowerCase()
   return result
 })
   */
+ 
+  //改变排序传给前端显示·=
+  const sortedRecords = computed(() => {
+    const result = [...records.value]
+    result.sort((a, b) => {
+      if (sortOrder.value === 'newest') {
+        return new Date(b.date) - new Date(a.date)
+      }
+
+      if (sortOrder.value === 'oldest') {
+        return new Date(a.date) - new Date(b.date)
+      }
+
+      return 0
+    })
+
+    return result
+  })
 
 </script>
 
@@ -97,7 +115,7 @@ const keyword = searchQuery.value.trim().toLowerCase()
           </tr>
         </thead>
         <tbody>
-        <tr v-for="record in records" :key="record.id">
+        <tr v-for="record in sortedRecords" :key="record.id">
           <td>{{ record.date }}</td>
           <td>{{ record.activity }}</td>
           <td>{{ record.organization }}</td>
