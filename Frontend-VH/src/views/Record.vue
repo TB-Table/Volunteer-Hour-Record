@@ -61,7 +61,7 @@ const keyword = searchQuery.value.trim().toLowerCase()
 
     if (sortOrder.value === 'oldest') {
       return new Date(a.date) - new Date(b.date)
-    }
+    } 
 
     return 0
   })
@@ -69,9 +69,9 @@ const keyword = searchQuery.value.trim().toLowerCase()
   return result
 })
   */
- 
+
   //改变排序传给前端显示·=
-  const sortedRecords = computed(() => {
+    const sortedRecords = computed(() => {
     const result = [...records.value]
     result.sort((a, b) => {
       if (sortOrder.value === 'newest') {

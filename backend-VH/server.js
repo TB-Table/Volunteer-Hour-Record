@@ -32,6 +32,7 @@ mongoose.connect('mongodb://localhost:27017/volunteer-record')
   },
   date: {
     type: [String],
+    required: true,
     default: []
   }
 });
