@@ -3,6 +3,49 @@ import FloatingCards from "@/components/FloatingCards.vue";
 import RecordCard from '@/components/Record-card.vue'
 import { computed, ref, onMounted, watch } from "vue";
 
+const dialogRef = ref(null)
+const formData = ref({
+  organization: '',
+  activity: '',
+  hours: '',
+  date: '',
+  text: ''
+})
+
+function showDialog() {
+  dialogRef.value.showModal();
+}
+
+function hideDialog() {
+  dialogRef.value.close();
+}
+
+
+const isSubmitting = ref(false)
+async function submitRecord(){
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
+  try {
+    const response = await fetch('http://localhost:8989/api/records', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData.value)
+    });
+
+    if(!response.ok) {
+      throw new Error('Failed to submit record');
+    }
+
+    hideDialog();
+  } catch (error) {
+    console.error('提交记录失败:', error);
+  } finally {
+    isSubmitting.value = false;
+  }
+} // 自动生成王朝了
+
 const records = ref([]);
 
 async function fetchRecords() {
@@ -64,7 +107,35 @@ const recentRecords = computed(() => {
           <h2>Recent Activity</h2>
         </div>
 
-        <span>ADD</span>
+        <button class="add-button" @click="showDialog">ADD</button>
+          <dialog ref="dialogRef">
+              <form @submit.prevent="submitRecord">
+                <h3>填写志愿记录</h3>
+                <label>organization</label>
+                <input v-model="formData.organization" required>
+
+                <label>activity</label>
+                <input v-model="formData.activity" required>
+
+                <label>hours</label>
+                <input v-model="formData.hours" required>
+
+                <label>date</label>
+                <input v-model.number="formData.date" 
+                type="number" 
+                min="0" 
+                required
+                /> <!--转化数字-->
+
+                <label>text</label>
+                <input v-model="formData.text">
+
+                <button type="submit">Submit</button> 
+                <button type="button" @click="hideDialog">Cancel</button> 
+                <!-- 到底要用英文还是中文好。 -->
+              </form>
+          </dialog>
+
     </div>
 
     <div class="activity-list">
@@ -76,7 +147,7 @@ const recentRecords = computed(() => {
 
         <div class="activity-info"> <!-- 加item的div-->
             <h3>{{ record.organization }}</h3>
-            <span class="activity-detail"> <!--再加一层垂直排列-->
+            <span class="activity-detail"> <!--加一层垂直排列-->
               {{ record.activity }} · {{ record.date[0] }}
             </span>
         </div>
@@ -253,6 +324,167 @@ const recentRecords = computed(() => {
   font-weight: 600;
   white-space: nowrap;
 }
+
+
+
+
+/* 添加dialog css */
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.add-button {
+  padding: 10px 20px;
+  background: #ed8b0c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.add-button:hover {
+  background: #d97900;
+}
+
+/* Dialog */
+dialog {
+  width: 460px;
+  max-width: calc(100% - 32px);
+  padding: 32px;
+  border: none;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #222;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.18);
+  margin: auto;
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+}
+
+/* Form */
+dialog form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+dialog h2 {
+  margin: 0 0 14px;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+dialog label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+  margin-top: 4px;
+}
+
+dialog input,
+dialog textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border: 1px solid #dedede;
+  border-radius: 7px;
+  background: #fafafa;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+dialog input:focus,
+dialog textarea:focus {
+  border-color: #ed8b0c;
+  box-shadow: 0 0 0 3px rgba(237, 139, 12, 0.12);
+  background: white;
+}
+
+dialog textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+/* Form Buttons */
+dialog button {
+  padding: 11px;
+  border: none;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+dialog button[type="submit"] {
+  margin-top: 12px;
+  background: #ed8b0c;
+  color: white;
+}
+
+dialog button[type="submit"]:hover {
+  background: #d97900;
+}
+
+dialog button[type="button"] {
+  background: #f1f1f1;
+  color: #444;
+}
+
+dialog button[type="button"]:hover {
+  background: #e5e5e5;
+}
+
+
+/* dialog动画 */
+dialog[open] {
+  animation: dialog-pop 0.3s ease-out;
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+  animation: backdrop-fade 0.3s ease-out;
+}
+
+
+@keyframes dialog-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+
+@keyframes backdrop-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog[open],
+  dialog::backdrop {
+    animation: none;
+  }
+}
+
+
 
 /* Mobile */
 @media (max-width: 600px) {

@@ -15,8 +15,8 @@ mongoose.connect('mongodb://localhost:27017/volunteer-record')
     unique: true
   },
   text: {
-    type: String,
-    required: true
+    type: String, 
+    default: ''
   },
   activity: {
     type: String,
@@ -75,6 +75,31 @@ app.get('/api/records', async (req, res) => {
     });
   }
 });
+
+app.post('/api/records', async (req, res) => {
+  try {
+    const lastRecord = await Record.findOne().sort({ id: -1 });
+    const nextId = lastRecord && lastRecord.id ? lastRecord.id + 1 : 1;
+    // 自动生成id
+    const record = new Record({
+      ...req.body,
+      id: nextId
+    });
+
+    await record.save();
+    res.status(201).json(record);
+  } 
+  catch (error) {
+    console.error('创建志愿记录失败:', error);
+
+    res.status(500).json({
+      message: '创建志愿记录失败'
+    });
+  }
+});
+
+
+
 
 app.listen(port, ()=> {
 console.log(`Server running at http://localhost:${port}`);
