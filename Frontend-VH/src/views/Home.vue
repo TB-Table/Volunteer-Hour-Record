@@ -444,46 +444,28 @@ dialog button[type="button"]:hover {
 
 /* dialog动画 */
 dialog[open] {
-  animation: dialog-pop 0.3s ease-out;
+  animation: popBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center;
 }
 
-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(3px);
-  animation: backdrop-fade 0.3s ease-out;
-}
-
-
-@keyframes dialog-pop {
-  from {
+@keyframes popBounce {
+  0% {
     opacity: 0;
-    transform: scale(0.88) translateY(15px);
+    transform: scale(0.75);
   }
-
-  to {
+  70% {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: scale(1.04);
   }
-}
-
-
-@keyframes backdrop-fade {
-  from {
-    opacity: 0;
-  }
-
-  to {
+  100% {
     opacity: 1;
+    transform: scale(1);
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  dialog[open],
-  dialog::backdrop {
-    animation: none;
-  }
+.pop-bounce {
+  animation: popBounce 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-
 
 
 /* Mobile */
