@@ -12,6 +12,53 @@ const formData = ref({
   text: ''
 })
 
+
+const editingRecordId = ref(null);
+function editRecord(record) {
+  editingRecordId.value = record.id;
+  formData.value = {
+    organization: record.organization,
+    activity: record.activity,
+    hours: record.hours,
+    date: record.date[0],
+    text: record.text
+  };
+  showDialog();
+}
+
+const isSubmitting = ref(false)
+async function submitRecord() {
+  if (editingRecordId.value !== null) {
+    await updateRecord(); 
+  } else {
+    await PostRecord(); 
+  }
+}
+
+async function updateRecord() {
+  try {
+    const response = await fetch(`http://localhost:8989/api/records/${editingRecordId.value}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData.value)
+    });
+
+    if(!response.ok) {
+      throw new Error('Failed to update record');
+    }
+
+    hideDialog();
+    editingRecordId.value = null;
+    await fetchRecords();
+
+  } catch (error) {
+    console.error('更新记录失败:', error);
+  }
+}
+
+
 function showDialog() {
   dialogRef.value.showModal();
 }
@@ -21,9 +68,8 @@ function hideDialog() {
 }
 
 
-const isSubmitting = ref(false)
-async function submitRecord(){
-  if (isSubmitting.value) return;
+async function PostRecord(){
+   if (isSubmitting.value) return;
   isSubmitting.value = true;
   try {
     const response = await fetch('http://localhost:8989/api/records', {
@@ -39,6 +85,7 @@ async function submitRecord(){
     }
 
     hideDialog();
+    await fetchRecords();
   } catch (error) {
     console.error('提交记录失败:', error);
   } finally {
@@ -122,7 +169,7 @@ const recentRecords = computed(() => {
 
                 <label>date</label>
                 <input v-model.number="formData.date" 
-                type="number" 
+                type="date"
                 min="0" 
                 required
                 /> <!--转化数字-->

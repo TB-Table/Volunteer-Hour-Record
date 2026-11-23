@@ -81,6 +81,7 @@ app.post('/api/records', async (req, res) => {
     const lastRecord = await Record.findOne().sort({ id: -1 });
     const nextId = lastRecord && lastRecord.id ? lastRecord.id + 1 : 1;
     // 自动生成id
+    console.log('POST BODY:', req.body);
     const record = new Record({
       ...req.body,
       id: nextId
@@ -94,6 +95,41 @@ app.post('/api/records', async (req, res) => {
 
     res.status(500).json({
       message: '创建志愿记录失败'
+    });
+  }
+});
+
+
+app.patch('/api/records/:id', async (req, res) => {
+  console.log('收到前端修改请求ID:', req.params.id, '数据:', req.body);
+  try {
+    const RecordId = Number(req.params.id);
+
+    const record = await Record.findOneAndUpdate(
+      { id: RecordId },
+      {
+        text: req.body.text,
+        activity: req.body.activity,
+        organization: req.body.organization,
+        hours: req.body.hours,
+        date: req.body.date
+      },
+      { returnDocument: 'after',}
+    );
+
+    if (!record) {
+      return res.status(404).json({
+        message: 'Record not found'
+      });
+    }
+
+    res.json(record);
+
+  } catch (error) {
+    console.error('修改失败:', error)
+    res.status(500).json({
+      message: '修改失败',
+      error: error.message
     });
   }
 });
